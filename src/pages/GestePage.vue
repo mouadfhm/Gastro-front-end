@@ -2,7 +2,6 @@
     <AppNavbar />
     <v-container>
       <v-card-title>Liste des gestes</v-card-title>
-      <FilterSection />
       <PatientTable />
       <AddButton />
     </v-container>
@@ -10,13 +9,11 @@
 
 <script>
 import AppNavbar from '../components/Navbar.vue';
-import FilterSection from '../components/FilterSection.vue';
 import PatientTable from '../components/PatientTable.vue';
 import AddButton from '../components/AddButton.vue';
 export default {
   components: {
     AppNavbar,
-    FilterSection,
     PatientTable,
     AddButton,
   },
@@ -32,7 +29,7 @@ export default {
 .v-container {
     background-color: white;
     border-radius: 15px;
-    margin-top: 5%;
+    margin-top: 2%;
 }
 .v-card-title{
     width: 100%;

@@ -4,7 +4,7 @@
     <v-spacer></v-spacer>
     <v-btn text @click='getGeste'>Geste</v-btn>
     <v-btn text @click='getPatient'>Patient</v-btn>
-    <v-btn text>Clinique</v-btn>
+    <v-btn text @click='getClinique'>Clinique</v-btn>
   </v-app-bar>
 </template>
 
@@ -20,5 +20,8 @@ export default {
     getPatient() {
       this.$router.push('/PatientPage');
     },
+    getClinique() {
+      this.$router.push('/CliniquePage');
+    }
 }}
 </script>
