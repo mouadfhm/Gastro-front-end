@@ -3,17 +3,17 @@
     <v-row>
       <v-card-title>Enregistrer un nouveau geste</v-card-title>
       <v-col cols="12" md="6">
-        <v-select v-model="clinique" :items="cliniques" label="Clinique" outlined dense></v-select>
+        <v-select v-model="clinique" :items="cliniques" label="Clinique*" outlined dense></v-select>
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field v-model="date" label="Date" type="date" outlined dense></v-text-field>
+        <v-text-field v-model="date" label="Date*" type="date" outlined dense></v-text-field>
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-text-field v-model="nomPatient" label="Nom de Patient" outlined dense></v-text-field>
+        <v-text-field v-model="nomPatient" label="Nom de Patient*" outlined dense></v-text-field>
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field v-model="prenomPatient" label="Prenom de Patient" outlined dense></v-text-field>
+        <v-text-field v-model="prenomPatient" label="Prenom de Patient*" outlined dense></v-text-field>
       </v-col>
 
       <v-col cols="12" md="6">
@@ -27,7 +27,7 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-select v-model="typeGeste" :items="typesGeste" label="Type du geste" outlined dense></v-select>
+        <v-select v-model="typeGeste" :items="typesGeste" label="Type du geste*" outlined dense></v-select>
       </v-col>
       <v-col cols="12" md="6">
         <v-text-field v-model="resultatGeste" label="Resultat du geste" outlined dense></v-text-field>
@@ -79,6 +79,10 @@ export default {
     },
     enregistrer() {
       // Handle form submission
+      if (!this.clinique || !this.date || !this.nomPatient || !this.prenomPatient ||  !this.typeGeste ) {
+        alert('Veuillez remplir les champs obligatoires *');
+        return;
+      }
       this.data = {
         clinique_name: this.clinique,
         date: this.date,
