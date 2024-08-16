@@ -40,6 +40,8 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-snackbar v-model="snackbar" top timeout="2000" color="green">Enregistrement reussi</v-snackbar>
+  <v-snackbar v-model="redSnackbar" top timeout="1000" color="red">Remplir les champs obligatoires</v-snackbar>
 </template>
 
 <script>
@@ -47,6 +49,8 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
   data() {
     return {
+      snackbar: false,
+      redSnackbar: false,
       data: {},
       clinique: '',
       date: '',
@@ -80,7 +84,7 @@ export default {
     enregistrer() {
       // Handle form submission
       if (!this.clinique || !this.date || !this.nomPatient || !this.prenomPatient ||  !this.typeGeste ) {
-        alert('Veuillez remplir les champs obligatoires *');
+        this.redSnackbar = true;
         return;
       }
       this.data = {
@@ -98,6 +102,7 @@ export default {
       console.log(this.data);
       this.addGeste(this.data).then((response) => {
         this.fetchGestes();
+        this.snackbar = true;
         this.$router.push('/GestePage');
       });
 

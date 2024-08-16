@@ -16,6 +16,8 @@
 
         </v-row>
     </v-container>
+    <v-snackbar v-model="snackbar" top timeout="1000" color="green">Enregistrement reussi</v-snackbar>
+    <v-snackbar v-model="redSnackbar" top timeout="1000" color="red">Clinique existe deja</v-snackbar>
 </template>
 
 <script>
@@ -31,22 +33,27 @@ export default {
     data() {
         return {
             name: '',
-            clinique : {},
+            clinique: {},
+            snackbar: false,
+            redSnackbar: false
         };
     },
 
     methods: {
-        ...mapActions([ 'addClinique']),
+        ...mapActions(['addClinique']),
 
         enregistrer() {
-            this.clinique={
+            this.clinique = {
                 name: this.name
             }
-            console.log(this.clinique);
-            this.addClinique( this.clinique).then(() => {
-                this.fetchCliniques();
-                this.name = '';
-                console.log(this.clinique);
+            this.addClinique(this.clinique).then((response) => {
+                if (!response) {
+                    this.redSnackbar = true;
+                } else {
+                    this.name = '';
+                    this.snackbar = true;
+                    console.log(this.clinique);
+                }
             });
         },
     },

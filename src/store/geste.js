@@ -39,6 +39,18 @@ const actions = {
               });
           });
     },
+    updateGeste({ commit }, geste) {
+      return new Promise((resolve, reject) => {
+          CustomizedAxios.post("/geste/update", geste)
+            .then((response) => {
+              resolve(response.data.payload);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
+  },
+
 
 };
 

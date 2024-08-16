@@ -16,7 +16,46 @@
   </v-row>
 
 
-  <v-data-table :headers="headers" :items="tableData" class="elevation-1 custom-table"></v-data-table>
+  <v-data-table :headers="headers" :items="tableData" class="elevation-1 custom-table">            <template v-slot:item.actions="{ item }">
+                <v-btn 
+                    color="blue" 
+                    @click="openEditDialog(item)"
+                    small
+                    append-icon="mdi-pencil"
+                >
+                    Modifier
+                </v-btn>
+            </template>
+</v-data-table>
+  <!-- Edit Patient Dialog -->
+  <v-dialog v-model="editDialogG" max-width="500px">
+    <v-card>
+      <v-card-title>
+        <span class="headline">Modifier Geste</span>
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="editForm">
+          <v-select v-model="editedGeste.clinique" :items="cliniques" label="Clinique*" aria-required="true"></v-select>
+          <v-text-field v-model="editedGeste.date" label="Date*" type="date" required></v-text-field>
+          <v-text-field v-model="editedGeste.lastname" label="Nom" required></v-text-field>
+          <v-text-field v-model="editedGeste.firstname" label="Prénom" required></v-text-field>
+          <v-text-field v-model="editedGeste.age" label="Age" type="number" required></v-text-field>
+          <v-text-field v-model="editedGeste.phone" label="Numero de telephone" required></v-text-field>
+          <v-text-field v-model="editedGeste.RC" label="RC" required></v-text-field>
+          <v-select v-model="editedGeste.typeGeste" :items="typesGeste" label="Type du geste*" required></v-select>
+          <v-text-field v-model="editedGeste.result" label="Résultat" required></v-text-field>
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="closeEditDialog">Annuler</v-btn>
+        <v-btn color="blue darken-1" text @click="saveGeste">Sauvegarder</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-snackbar v-model="snackbar" top timeout="2000" color="green">Modification reussi</v-snackbar>
+  <v-snackbar v-model="redSnackbar" top timeout="1000" color="red">Remplir les champs obligatoires</v-snackbar>
+
 </template>
 
 <script>
@@ -25,34 +64,50 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
   data() {
     return {
+      editDialogG: false,
+      snackbar: false,
+      redSnackbar: false,
       filteredGestes: [],
       selectedClinique: '',
       selectedPatient: '',
       selectedDate: '',
       cliniques: [""],
       patients: [""],
-
       gestes: [],
       headers: [
-        { title: 'Clinique', value: 'clinique.name' }, // Change title to text (Vuetify uses `text` for header labels)
+        { title: 'Clinique', value: 'clinique.name' },
         { title: 'Date', value: 'date' },
         { title: 'Nom', value: 'patient.lastname' },
         { title: 'Prenom ', value: 'patient.firstname' },
         { title: 'Geste', value: 'type' },
         { title: 'Resultat', value: 'patient.result' },
+        { title: 'Actions', value: 'actions', sortable: false },
       ],
       tableData: [],
+      editedGeste: {
+        clinique: '',
+        date: '',
+        lastname: '',
+        firstname: '',
+        age: '',
+        phone: '',
+        RC: '',
+        typeGeste: '',
+        result: '',
+      }
     };
   },
 
   computed: {
     ...mapGetters(['getGestes']),
   },
+
   mounted() {
     this.getGestesMethod();
   },
+
   methods: {
-    ...mapActions(['fetchGestes']),
+    ...mapActions(['fetchGestes', 'updateGeste']),
 
     getGestesMethod() {
       this.fetchGestes().then(() => {
@@ -67,28 +122,22 @@ export default {
     applyFilter() {
       let filteredGestes = this.gestes;
 
-      // Filter by selected clinique
       if (this.selectedClinique) {
         filteredGestes = filteredGestes.filter(geste =>
           geste.clinique && geste.clinique.name === this.selectedClinique
         );
       }
 
-      // Filter by selected patient
       if (this.selectedPatient) {
         filteredGestes = filteredGestes.filter(geste =>
           geste.patient && (geste.patient.firstname + ' ' + geste.patient.lastname === this.selectedPatient)
         );
       }
 
-      // Filter by selected date
       if (this.selectedDate) {
-        filteredGestes = filteredGestes.filter(geste =>
-          geste.date === this.selectedDate
-        );
+        filteredGestes = filteredGestes.filter(geste => geste.date === this.selectedDate);
       }
 
-      // Update tableData with the filtered results
       this.tableData = filteredGestes;
     },
 
@@ -98,9 +147,37 @@ export default {
       this.selectedDate = '';
       this.tableData = this.gestes;
     },
+
+    openEditDialog(geste) {
+    this.editedGeste = {
+      clinique: geste.clinique.name || '',
+      date: geste.date || '',
+      lastname: geste.patient.lastname || '',
+      firstname: geste.patient.firstname || '',
+      age: geste.age || '',
+      phone: geste.phone || '',
+      RC: geste.RC || '',
+      typeGeste: geste.type || '',
+      result: geste.patient.result || '',
+    };
+    this.editDialogG = true;
   },
 
+    closeEditDialog() {
+      this.editDialogG = false;
+      this.$refs.editForm.resetValidation();
+    },
+
+    saveGeste() {
+      this.updateGeste(this.editedGeste).then(() => {
+        this.snackbar = true;
+        this.editDialogG = false;
+        this.getGestesMethod(); // Refresh the list after saving
+      });
+    },
+  },
 };
+
 </script>
 
 <style>
