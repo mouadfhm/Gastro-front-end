@@ -67,18 +67,23 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['getGestes', 'getCliniques']),
+    ...mapGetters(['getGestes', 'getCliniques', 'getTypeGeste']),
   },
   mounted() {
-    this.getGestesMethod();
+    this.getCliniquesMethod();
+    this.getTypeGesteMethod();
   },
 
   methods: {
-    ...mapActions(['fetchCliniques','fetchGestes','addGeste']),
-    getGestesMethod() {
+    ...mapActions(['fetchCliniques','fetchGestes','addGeste','fetchTypeGeste']),
+    getCliniquesMethod() {
         this.fetchCliniques().then(() => {
-          this.cliniques = this.getCliniques.map(clinique => clinique.name);
-            console.log(this.cliniques); // This should now print the array of clinic names
+          this.cliniques = [...new Set(this.getCliniques.map(clinique => clinique.name))];
+        });
+    },
+    getTypeGesteMethod() {
+        this.fetchTypeGeste().then(() => {
+          this.typesGeste = [...new Set(this.getTypeGeste.map(typeGeste => typeGeste.name))];
         });
     },
     enregistrer() {

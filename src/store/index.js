@@ -3,6 +3,7 @@ import VuexPersist from 'vuex-persist';
 import geste from './geste.js';
 import patient from './patient.js';
 import clinique from './clinique.js';
+import typeGeste from './typeGeste.js';
 
 const vuexLocalStorage = new VuexPersist({
     key: 'my-app', // The key to store the state
@@ -12,6 +13,7 @@ const vuexLocalStorage = new VuexPersist({
         geste: state.geste,
         patient: state.patient,
         clinique: state.clinique,
+        typeGeste: state.typeGeste
 
     })
 });
@@ -21,6 +23,7 @@ const store = createStore({
         geste: geste,
         patient: patient,
         clinique: clinique,
+        typeGeste: typeGeste
     },
     plugins: [vuexLocalStorage.plugin]
 });

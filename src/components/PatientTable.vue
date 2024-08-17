@@ -9,24 +9,25 @@
     <v-col cols="4">
       <v-text-field v-model="selectedDate" label="Date" type="date" dense outlined></v-text-field>
     </v-col>
-    <v-col cols="12" class="text-right">
+  </v-row> <v-row>
+    <v-col>
+      <v-btn color="teal" dark @click="addGeste">Ajouter un geste</v-btn>
+    </v-col>
+    <v-spacer></v-spacer>
+    <v-col class="text-right">
       <v-btn append-icon="mdi-filter" color="teal" @click="applyFilter">Filtre</v-btn>
       <v-btn append-icon="mdi-close" color="white" @click="clearFilter">clear</v-btn>
     </v-col>
   </v-row>
-
-
-  <v-data-table :headers="headers" :items="tableData" class="elevation-1 custom-table">            <template v-slot:item.actions="{ item }">
-                <v-btn 
-                    color="blue" 
-                    @click="openEditDialog(item)"
-                    small
-                    append-icon="mdi-pencil"
-                >
-                    Modifier
-                </v-btn>
-            </template>
-</v-data-table>
+  <v-row>
+    <v-data-table :headers="headers" :items="tableData" class="elevation-1 custom-table"> <template
+        v-slot:item.actions="{ item }">
+        <v-btn color="blue" @click="openEditDialog(item)" small append-icon="mdi-pencil">
+          Modifier
+        </v-btn>
+      </template>
+    </v-data-table>
+  </v-row>
   <!-- Edit Patient Dialog -->
   <v-dialog v-model="editDialogG" max-width="500px">
     <v-card>
@@ -35,14 +36,15 @@
       </v-card-title>
       <v-card-text>
         <v-form ref="editForm">
-          <v-select v-model="editedGeste.clinique" :items="cliniques" label="Clinique*" aria-required="true"></v-select>
+          <v-select v-model="editedGeste.clinique_name" :items="allCiliniques" label="Clinique*"
+            aria-required="true"></v-select>
           <v-text-field v-model="editedGeste.date" label="Date*" type="date" required></v-text-field>
-          <v-text-field v-model="editedGeste.lastname" label="Nom" required></v-text-field>
-          <v-text-field v-model="editedGeste.firstname" label="Prénom" required></v-text-field>
+          <v-text-field v-model="editedGeste.patient_lastname" label="Nom" required></v-text-field>
+          <v-text-field v-model="editedGeste.patient_firstname" label="Prénom" required></v-text-field>
           <v-text-field v-model="editedGeste.age" label="Age" type="number" required></v-text-field>
           <v-text-field v-model="editedGeste.phone" label="Numero de telephone" required></v-text-field>
           <v-text-field v-model="editedGeste.RC" label="RC" required></v-text-field>
-          <v-select v-model="editedGeste.typeGeste" :items="typesGeste" label="Type du geste*" required></v-select>
+          <v-select v-model="editedGeste.type" :items="typesGeste" label="Type du geste*" required></v-select>
           <v-text-field v-model="editedGeste.result" label="Résultat" required></v-text-field>
         </v-form>
       </v-card-text>
@@ -73,6 +75,8 @@ export default {
       selectedDate: '',
       cliniques: [""],
       patients: [""],
+      typesGeste: [],
+      allCiliniques: [],
       gestes: [],
       headers: [
         { title: 'Clinique', value: 'clinique.name' },
@@ -85,29 +89,35 @@ export default {
       ],
       tableData: [],
       editedGeste: {
-        clinique: '',
+        clinique_name: '',
         date: '',
-        lastname: '',
-        firstname: '',
+        patient_lastname: '',
+        patient_firstname: '',
         age: '',
         phone: '',
         RC: '',
-        typeGeste: '',
+        type: '',
         result: '',
       }
     };
   },
 
   computed: {
-    ...mapGetters(['getGestes']),
+    ...mapGetters(['getGestes','getTypeGeste' ,'getCliniques']),
   },
 
   mounted() {
     this.getGestesMethod();
+    this.getTypeGesteMethod();
+    this.getCliniquesMethod();
   },
 
   methods: {
-    ...mapActions(['fetchGestes', 'updateGeste']),
+    ...mapActions(['fetchGestes', 'updateGeste','fetchTypeGeste','fetchCliniques']),
+
+    addGeste() {
+      this.$router.push('/GesteFormPage');
+    },
 
     getGestesMethod() {
       this.fetchGestes().then(() => {
@@ -116,6 +126,18 @@ export default {
         this.cliniques = [...new Set(this.gestes.map(geste => geste.clinique.name))];
         this.patients = [...new Set(this.gestes.map(geste => geste.patient.firstname + ' ' + geste.patient.lastname))];
         console.log(this.gestes);
+      });
+    },
+
+    getTypeGesteMethod() {
+      this.fetchTypeGeste().then(() => {
+        this.typesGeste = [...new Set(this.getTypeGeste.map(typeGeste => typeGeste.name))];
+      });
+    },
+
+    getCliniquesMethod() {
+      this.fetchCliniques().then(() => {
+        this.allCiliniques = [...new Set(this.getCliniques.map(clinique => clinique.name))];
       });
     },
 
@@ -149,19 +171,20 @@ export default {
     },
 
     openEditDialog(geste) {
-    this.editedGeste = {
-      clinique: geste.clinique.name || '',
-      date: geste.date || '',
-      lastname: geste.patient.lastname || '',
-      firstname: geste.patient.firstname || '',
-      age: geste.age || '',
-      phone: geste.phone || '',
-      RC: geste.RC || '',
-      typeGeste: geste.type || '',
-      result: geste.patient.result || '',
-    };
-    this.editDialogG = true;
-  },
+      this.editedGeste = {
+        id: geste.id,
+        clinique_name: geste.clinique.name || '',
+        date: geste.date || '',
+        patient_lastname: geste.patient.lastname || '',
+        patient_firstname: geste.patient.firstname || '',
+        age: geste.age || '',
+        phone: geste.phone || '',
+        RC: geste.RC || '',
+        type: geste.type || '',
+        result: geste.patient.result || '',
+      };
+      this.editDialogG = true;
+    },
 
     closeEditDialog() {
       this.editDialogG = false;
@@ -169,6 +192,11 @@ export default {
     },
 
     saveGeste() {
+      if (!this.editedGeste.clinique_name || !this.editedGeste.date || !this.editedGeste.patient_lastname || !this.editedGeste.patient_firstname || !this.editedGeste.type) {
+        this.redSnackbar = true;
+        return;
+      }
+      console.log(this.editedGeste);
       this.updateGeste(this.editedGeste).then(() => {
         this.snackbar = true;
         this.editDialogG = false;

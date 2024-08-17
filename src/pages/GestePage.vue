@@ -3,19 +3,16 @@
     <v-container>
       <v-card-title>Liste des gestes</v-card-title>
       <PatientTable />
-      <AddButton />
     </v-container>
 </template>
 
 <script>
 import AppNavbar from '../components/Navbar.vue';
 import PatientTable from '../components/PatientTable.vue';
-import AddButton from '../components/AddButton.vue';
 export default {
   components: {
     AppNavbar,
     PatientTable,
-    AddButton,
   },
 };
 </script>
