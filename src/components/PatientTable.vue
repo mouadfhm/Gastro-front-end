@@ -208,32 +208,3 @@ export default {
 
 </script>
 
-<style>
-.custom-table {
-  border-radius: 15px;
-  background-color: #D1C8E1;
-  color: #000;
-}
-
-.custom-table .v-data-table-header {
-  background-color: #D1C8E1;
-  /* Match the table background color */
-  color: #000;
-  /* Header text color */
-}
-
-.custom-table .v-data-table-header th {
-  color: #000;
-  /* Header text color */
-}
-
-.custom-table .v-data-table__wrapper {
-  background-color: #D1C8E1;
-  /* Background color for table body */
-}
-
-.custom-table .v-data-table__tbody td {
-  color: #000;
-  /* Text color for table rows */
-}
-</style>
